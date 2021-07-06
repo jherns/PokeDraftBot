@@ -2,7 +2,8 @@ const getPokemonInfo = require('../pokeAPIWrapper/pokemonInfo.js');
 
 module.exports = {
   name: 'pokemon',
-  description: 'Information about the arguments provided.',
+  description:
+    'Provides information about the abilities, type(s), and stats for the specified pokemon',
   args: true,
   execute: async (message, args) => {
     const pokemonInfo = await getPokemonInfo(args[0].toLowerCase());
