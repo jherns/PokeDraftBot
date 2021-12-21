@@ -3,6 +3,13 @@ const Discord = require('discord.js');
 const dotenv = require('dotenv');
 const { prefix } = require('../config.json');
 
+const databaseInfo = {
+  hostname: 'localhost',
+  username: 'root',
+  password: 'PokemonDatabase',
+  database: 'pokemon',
+};
+
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
