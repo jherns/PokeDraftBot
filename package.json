@@ -1,10 +1,11 @@
 {
-  "name": "discord-bot",
+  "name": "poke-draft-discord-bot",
   "version": "1.0.0",
-  "description": "A bot to play around with",
+  "description": "A discord bot to faciliate a Pokemon Draft League",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js"
   },
   "author": "John Hernley",
   "license": "MIT",
@@ -19,6 +20,8 @@
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
-    "prettier": "^2.3.2"
+    "prettier": "^2.3.2",
+    "nodemon": "^2.0.15"
+
   }
 }
