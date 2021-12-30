@@ -2,23 +2,17 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const dotenv = require('dotenv');
 const { prefix } = require('../config.json');
-
-const databaseInfo = {
-  hostname: 'localhost',
-  username: 'root',
-  password: 'PokemonDatabase',
-  database: 'pokemon',
-};
+const pokemonModel = require('./models/pokemonModel.js')
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
 const commandFiles = fs
-  .readdirSync('./commands')
+  .readdirSync('./src/commands')
   .filter((file) => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-  const command = require(`../commands/${file}`);
+  const command = require(`./commands/${file}`);
   // set a new item in the Collection
   // with the key as the command name and the value as the exported module
   client.commands.set(command.name, command);
@@ -56,4 +50,20 @@ client.on('message', (message) => {
     message.reply('there was an error trying to execute that command!');
   }
 });
-client.login(process.env.TOKEN);
+
+pokemonModel.init().then(() => {
+  client.login(process.env.TOKEN);
+}).catch((err) => {
+  console.error(err);
+  process.exit(1);
+})
+
+const gracefulShutdown = () => {
+  pokemonModel.teardown()
+      .catch(() => {})
+      .then(() => process.exit());
+};
+
+process.on('SIGINT', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGUSR2', gracefulShutdown); // Sent by nodemon
