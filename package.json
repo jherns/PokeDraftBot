@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon --inspect=0.0.0.0:9229 src/index.js"
   },
   "author": "John Hernley",
   "license": "MIT",
@@ -14,6 +14,7 @@
     "discord.js": "^12.5.3",
     "dotenv": "^10.0.0",
     "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
     "node-fetch": "^2.6.1",
     "wait-port": "^0.2.9"
   },

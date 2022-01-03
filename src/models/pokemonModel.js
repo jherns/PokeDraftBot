@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+const mysql = require('mysql2/promise');
 const fs = require('fs');
 const path = require('path');
 const waitPort = require('wait-port');
@@ -7,32 +7,29 @@ let con;
 
 async function init() {
   const host = process.env.MYSQL_HOST;
-  con = mysql.createConnection({
-    host,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DB,
-    multipleStatements: true,
-  });
-
   await waitPort({ host, port: 3306 });
-
-  con.connect((error) => {
-    if (error) {
-      console.log('Error connecting to DB');
-      return;
-    }
+  try {
+    con = await mysql.createConnection({
+      host,
+      user: process.env.MYSQL_USER,
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DB,
+      multipleStatements: true,
+    });
     console.log('Connection established');
-  });
+  } catch (error) {
+    console.log('Error connecting to DB');
+  }
 
-  const sql = fs.readFileSync(path.join(__dirname, '/init_db.sql')).toString();
-  await con.query(sql, (error, results) => {
-    if (error) {
-      throw error;
-    } else {
-      console.log('DB initialized.');
-    }
-  });
+  try {
+    const sql = fs
+      .readFileSync(path.join(__dirname, '/init_db.sql'))
+      .toString();
+    await con.query(sql);
+    console.log('DB initialized.');
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function teardown() {
@@ -168,7 +165,8 @@ async function insertPokemon(serverId, userId, pokemonName, tier) {
 }
 
 async function draft(serverId, userId, pokemonName) {
-  if (!(await validMon(pokemonName))) {
+  const isValid = await validMon(pokemonName);
+  if (!isValid) {
     return 'This is not a valid pokemon';
   }
   if (await isDrafted(pokemonName)) {
