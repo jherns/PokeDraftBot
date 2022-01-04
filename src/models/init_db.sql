@@ -11,8 +11,9 @@ CREATE TABLE pokemon (
 DROP TABLE IF EXISTS teams;
 CREATE TABLE teams (
   id smallint NOT NULL AUTO_INCREMENT,
-  pokemon varchar(255) NOT NULL,
+  serverId varchar(255) NOT NULL,
   userId varchar(255) NOT NULL,
+  pokemon varchar(255) NOT NULL,
   tier varchar(255) NOT NULL,
   PRIMARY KEY (id)
 );
