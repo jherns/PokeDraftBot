@@ -8,8 +8,7 @@ CREATE TABLE pokemon (
   PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS teams;
-CREATE TABLE teams (
+CREATE TABLE IF NOT EXISTS teams (
   id smallint NOT NULL AUTO_INCREMENT,
   serverId varchar(255) NOT NULL,
   userId varchar(255) NOT NULL,

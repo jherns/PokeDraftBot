@@ -1,5 +1,4 @@
 const { draft } = require('../models/pokemonModel.js');
-
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
@@ -13,10 +12,10 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
-    interaction.reply(
+    await interaction.reply(
       await draft(
-        message.guildId,
-        message.member.id,
+        interaction.guildId,
+        interaction.member.user.id,
         interaction.options.getString('pokemon').toLowerCase()
       )
     );
