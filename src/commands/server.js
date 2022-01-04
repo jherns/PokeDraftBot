@@ -1,7 +1,8 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
-  name: 'server',
-  description: 'Displays server name',
-  execute(message) {
-    message.channel.send(`This server's name is: ${message.guild.name}`);
-  },
+  data: new SlashCommandBuilder().setName('server').setDescription('Displays server name'),
+  async execute(interaction) {
+    await interaction.reply({content: `This server's name is: ${message.guild.name}`, ephemeral: true});
+  }
 };

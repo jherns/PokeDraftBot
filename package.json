@@ -10,8 +10,11 @@
   "author": "John Hernley",
   "license": "MIT",
   "dependencies": {
+    "@discordjs/builders": "^0.11.0",
+    "@discordjs/rest": "^0.2.0-canary.0",
     "csvtojson": "^2.0.10",
-    "discord.js": "^12.5.3",
+    "discord-api-types": "^0.26.1",
+    "discord.js": "^13.5.0",
     "dotenv": "^10.0.0",
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.1",
