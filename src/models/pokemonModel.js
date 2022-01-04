@@ -33,13 +33,12 @@ async function init() {
 }
 
 async function teardown() {
-  await con.end((error) => {
-    if (error) {
-      throw error;
-    } else {
-      console.log('Disconnected from DB');
-    }
-  });
+  try {
+    await con.end();
+  } catch (error) {
+    throw error;
+  }
+  console.log('Disconnected from DB');
 }
 
 async function validMon(pokemonName) {
