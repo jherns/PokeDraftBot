@@ -1,7 +1,7 @@
 const fs = require('fs');
-const {Client, Intents, Collection} = require('discord.js');
+const { Client, Intents, Collection } = require('discord.js');
 const { token } = require('../config.json');
-const pokemonModel = require('./models/pokemonModel.js')
+const pokemonModel = require('./models/pokemonModel.js');
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 client.commands = new Collection();
@@ -23,11 +23,11 @@ client.once('ready', () => {
 
 // ... client setup (keep reading)
 
-client.on('interactionCreate', async interaction => {
+client.on('interactionCreate', async (interaction) => {
   if (!interaction.isCommand()) return;
 
-	const command = client.commands.get(interaction.commandName);
-	if (!command) return;
+  const command = client.commands.get(interaction.commandName);
+  if (!command) return;
 
   try {
     command.execute(interaction);
@@ -37,17 +37,21 @@ client.on('interactionCreate', async interaction => {
   }
 });
 
-pokemonModel.init().then(() => {
-  client.login(token);
-}).catch((err) => {
-  console.error(err);
-  process.exit(1);
-})
+pokemonModel
+  .init()
+  .then(() => {
+    client.login(token);
+  })
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
 
 const gracefulShutdown = () => {
-  pokemonModel.teardown()
-      .catch(() => {})
-      .then(() => process.exit());
+  pokemonModel
+    .teardown()
+    .catch(() => {})
+    .then(() => process.exit());
 };
 
 process.on('SIGINT', gracefulShutdown);

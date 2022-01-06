@@ -33,69 +33,47 @@ async function init() {
 }
 
 async function teardown() {
-  await con.end((error) => {
-    if (error) {
-      throw error;
-    } else {
-      console.log('Disconnected from DB');
-    }
-  });
-}
-
-async function validMon(pokemonName) {
-  await con.query(
-    'SELECT count(*) AS pokemonCount FROM pokemon WHERE name = ?',
-    [pokemonName],
-    (error, results) => {
-      if (error) {
-        throw error;
-      } else {
-        return results[0].pokemonCount === 1;
-      }
-    }
-  );
+  try {
+    await con.end();
+    console.log('Disconnected from DB');
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function isDrafted(pokemonName) {
-  await con.query(
-    'SELECT count(*) AS pokemonCount FROM teams WHERE pokemon = ?',
-    [pokemonName],
-    (error, results) => {
-      if (error) {
-        throw error;
-      } else {
-        return results[0].pokemonCount === 1;
-      }
-    }
-  );
+  try {
+    const [rows] = await con.query(
+      'SELECT count(*) AS pokemonCount FROM teams WHERE pokemon = ?',
+      [pokemonName]
+    );
+    return rows[0].pokemonCount > 0;
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function getTier(pokemonName) {
-  await con.query(
-    'SELECT tier FROM pokemon WHERE name = ?',
-    [pokemonName],
-    (error, results) => {
-      if (error) {
-        throw error;
-      } else {
-        return results[0].tier;
-      }
-    }
-  );
+  try {
+    const [rows] = await con.query('SELECT tier FROM pokemon WHERE name = ?', [
+      pokemonName,
+    ]);
+    return rows[0]?.tier;
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function getUserTiers(serverId, userId) {
-  await con.query(
-    'SELECT tier FROM teams WHERE serverId = ?, userId = ?',
-    [serverId, userId],
-    (error, results) => {
-      if (error) {
-        throw error;
-      } else {
-        return results;
-      }
-    }
-  );
+  try {
+    const [rows] = await con.query(
+      'SELECT tier FROM teams WHERE serverId = ? AND userId = ?',
+      [serverId, userId]
+    );
+    return rows.map((row) => row.tier);
+  } catch (error) {
+    throw error;
+  }
 }
 
 function calcOU1Tier(userTiers) {
@@ -151,28 +129,25 @@ function calculatePokemonDraftTier(userTiers, tier) {
 }
 
 async function insertPokemon(serverId, userId, pokemonName, tier) {
-  await con.query(
-    'INSERT INTO teams (serverId, userId, pokemon, tier) VALUES (? ? ? ?)',
-    [serverId, userId, pokemonName, tier],
-    (error, results) => {
-      if (error) {
-        throw error;
-      } else {
-        return `${pokemonName} drafted in the tier ${tier}`;
-      }
-    }
-  );
+  try {
+    await con.query(
+      'INSERT INTO teams (serverId, userId, pokemon, tier) VALUES (?, ?, ?, ?)',
+      [serverId, userId, pokemonName, tier]
+    );
+    return `${pokemonName} drafted in the tier ${tier}`;
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function draft(serverId, userId, pokemonName) {
-  const isValid = await validMon(pokemonName);
-  if (!isValid) {
+  const tier = await getTier(pokemonName);
+  if (!tier) {
     return 'This is not a valid pokemon';
   }
   if (await isDrafted(pokemonName)) {
     return 'This pokemon has already been drafted';
   }
-  const tier = await getTier(pokemonName);
   const userTiers = await getUserTiers(serverId, userId);
   if (userTiers.length === 10) {
     return 'You have already drafted 10 pokemon.';
@@ -181,7 +156,7 @@ async function draft(serverId, userId, pokemonName) {
   if (!draftTier) {
     return `You do not have an available draft spot for a pokemon of tier ${tier}`;
   }
-  return await insertPokemon(serverId, userId, pokemonName, tier);
+  return await insertPokemon(serverId, userId, pokemonName, draftTier);
 }
 
 module.exports = {
