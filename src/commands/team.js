@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-
+const { getPokemonInfo } = require('../utils.js');
+const { getUserPokemon } = require('../models/pokemonModel.js');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('team')
@@ -11,6 +12,14 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
-    await interaction.reply('hello');
+    const teamPokemon = await getUserPokemon(
+      interaction.guildId,
+      interaction.options.getUser('owner').id
+    );
+    const pokemonReplies = [];
+    for (const pokemon of teamPokemon) {
+      pokemonReplies.push(await getPokemonInfo(pokemon));
+    }
+    await interaction.reply(pokemonReplies.join('\n\n'));
   },
 };

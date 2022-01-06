@@ -16,7 +16,6 @@
     "discord-api-types": "^0.26.1",
     "discord.js": "^13.5.0",
     "mysql2": "^2.3.3",
-    "node": "^17.3.0",
     "node-fetch": "^2.6.1",
     "wait-port": "^0.2.9"
   },

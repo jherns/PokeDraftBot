@@ -75,6 +75,17 @@ async function getUserTiers(serverId, userId) {
     throw error;
   }
 }
+async function getUserPokemon(serverId, userId) {
+  try {
+    const [rows] = await con.query(
+      'SELECT pokemon FROM teams WHERE serverID = ? AND userId = ?',
+      [serverId, userId]
+    );
+    return rows.map((row) => row.pokemon);
+  } catch (error) {
+    throw error;
+  }
+}
 
 function calcOU1Tier(userTiers) {
   return userTiers.includes('OU1') ? null : 'OU1';
@@ -163,4 +174,5 @@ module.exports = {
   init,
   teardown,
   draft,
+  getUserPokemon,
 };
