@@ -16,6 +16,6 @@ module.exports = {
   async execute(interaction) {
     const pokemonName = interaction.options.getString('name');
     const pokemonInfo = await getPokemonInfo(pokemonName);
-    await interaction.reply(`pokemonInfo`);
+    await interaction.reply(pokemonInfo);
   },
 };

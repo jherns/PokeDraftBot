@@ -66,12 +66,23 @@ async function getTier(pokemonName) {
 
 async function soundsLike(pokemonName) {
   try {
-    const [rows] = await con.query('SELECT name FROM pokemon WHERE name SOUNDS LIKE ?',
-    [pokemonName])
+    const [rows] = await con.query(
+      'SELECT name FROM pokemon WHERE name SOUNDS LIKE ?',
+      [pokemonName]
+    );
     return rows.map((row) => row.name);
   } catch (error) {
     throw error;
   }
+}
+
+async function recommendPokemon(pokemonName) {
+  const pokemonRecommendations = await soundsLike(pokemonName);
+  return pokemonRecommendations
+    ? `${pokemonName} is not a valid pokemon. Did you mean ${pokemonRecommendations.join(
+        ', '
+      )}`
+    : `${pokemonName} is not a valid pokemon.`;
 }
 
 async function getUserTiers(serverId, userId) {
@@ -178,7 +189,7 @@ async function swapPokemon(serverId, userId, newPokemon, oldPokemon) {
     await con.query(
       'UPDATE teams SET pokemon = ? WHERE serverId = ? AND userId = ? AND pokemon = ?',
       [newPokemon, serverId, userId, oldPokemon]
-    )
+    );
   } catch (error) {
     throw error;
   }
@@ -186,7 +197,7 @@ async function swapPokemon(serverId, userId, newPokemon, oldPokemon) {
 async function draft(serverId, userId, pokemonName) {
   const tier = await getTier(pokemonName);
   if (!tier) {
-    return `${pokemonName} is not a valid pokemon. Did you mean ${(await soundsLike(pokemonName)).join(', ')}`;
+    return recommendPokemon(pokemonName);
   }
   if (await isDrafted(pokemonName)) {
     return 'This pokemon has already been drafted';
@@ -203,24 +214,32 @@ async function draft(serverId, userId, pokemonName) {
 }
 
 async function swap(serverId, userId, newPokemon, oldPokemon) {
-  if (await getTier(newPokemon)) {
-    return `${pokemonName} is not a valid pokemon`;
+  const newPokemonTier = await getTier(newPokemon);
+  if (newPokemonTier) {
+    recommendPokemon(newPokemon);
   }
   if (await getTier(oldPokemon)) {
-    return `${oldPokemon} is not a valid pokemon`;
+    recommendPokemon(oldPokemon);
   }
   const userPokemonTiers = await getUserPokemonTiers(serverId, userId);
-  if (!userPokemonTiers.map(row => row.pokemon).includes(oldPokemon)) {
+  if (!userPokemonTiers.map((row) => row.pokemon).includes(oldPokemon)) {
     return `${oldPokemon} is not on your team.`;
   }
   if (await isDrafted(newPokemon)) {
     return `${newPokemon} is already drafted.`;
   }
 
-  if (!calculatePokemonDraftTier(userPokemonTiers.filter( (row) => row.pokemon !== oldPokemon).map(row => row.pokemon), newPokemon)) {
+  if (
+    !calculatePokemonDraftTier(
+      userPokemonTiers
+        .filter((row) => row.pokemon !== oldPokemon)
+        .map((row) => row.pokemon),
+      newPokemonTier
+    )
+  ) {
     return `It is not valid for you to swap ${newPokemon} for ${oldPokemon}`;
   }
-  swapPokemon(serverId, user, newPokemon, oldPokemon);
+  await swapPokemon(serverId, userId, newPokemon, oldPokemon);
   return `Swapped ${oldPokemon} for ${newPokemon}`;
 }
 
