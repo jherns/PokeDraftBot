@@ -64,6 +64,16 @@ async function getTier(pokemonName) {
   }
 }
 
+async function soundsLike(pokemonName) {
+  try {
+    const [rows] = await con.query('SELECT name FROM pokemon WHERE name SOUNDS LIKE ?',
+    [pokemonName])
+    return rows.map((row) => row.name);
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function getUserTiers(serverId, userId) {
   try {
     const [rows] = await con.query(
@@ -176,7 +186,7 @@ async function swapPokemon(serverId, userId, newPokemon, oldPokemon) {
 async function draft(serverId, userId, pokemonName) {
   const tier = await getTier(pokemonName);
   if (!tier) {
-    return `${pokemonName} is not a valid pokemon`;
+    return `${pokemonName} is not a valid pokemon. Did you mean ${(await soundsLike(pokemonName)).join(', ')}`;
   }
   if (await isDrafted(pokemonName)) {
     return 'This pokemon has already been drafted';
@@ -219,5 +229,5 @@ module.exports = {
   teardown,
   draft,
   getUserPokemon,
-  swapPokemon,
+  swap,
 };
