@@ -87,6 +87,18 @@ async function getUserPokemon(serverId, userId) {
   }
 }
 
+async function getUserPokemonTiers(serverId, userId) {
+  try {
+    const [rows] = await con.query(
+      'SELECT pokemon, tier FROM teams WHERE serverId = ? AND userId = ?',
+      [serverId, userId]
+    );
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
 function calcOU1Tier(userTiers) {
   return userTiers.includes('OU1') ? null : 'OU1';
 }
@@ -151,10 +163,20 @@ async function insertPokemon(serverId, userId, pokemonName, tier) {
   }
 }
 
+async function swapPokemon(serverId, userId, newPokemon, oldPokemon) {
+  try {
+    await con.query(
+      'UPDATE teams SET pokemon = ? WHERE serverId = ? AND userId = ? AND pokemon = ?',
+      [newPokemon, serverId, userId, oldPokemon]
+    )
+  } catch (error) {
+    throw error;
+  }
+}
 async function draft(serverId, userId, pokemonName) {
   const tier = await getTier(pokemonName);
   if (!tier) {
-    return 'This is not a valid pokemon';
+    return `${pokemonName} is not a valid pokemon`;
   }
   if (await isDrafted(pokemonName)) {
     return 'This pokemon has already been drafted';
@@ -170,9 +192,32 @@ async function draft(serverId, userId, pokemonName) {
   return await insertPokemon(serverId, userId, pokemonName, draftTier);
 }
 
+async function swap(serverId, userId, newPokemon, oldPokemon) {
+  if (await getTier(newPokemon)) {
+    return `${pokemonName} is not a valid pokemon`;
+  }
+  if (await getTier(oldPokemon)) {
+    return `${oldPokemon} is not a valid pokemon`;
+  }
+  const userPokemonTiers = await getUserPokemonTiers(serverId, userId);
+  if (!userPokemonTiers.map(row => row.pokemon).includes(oldPokemon)) {
+    return `${oldPokemon} is not on your team.`;
+  }
+  if (await isDrafted(newPokemon)) {
+    return `${newPokemon} is already drafted.`;
+  }
+
+  if (!calculatePokemonDraftTier(userPokemonTiers.filter( (row) => row.pokemon !== oldPokemon).map(row => row.pokemon), newPokemon)) {
+    return `It is not valid for you to swap ${newPokemon} for ${oldPokemon}`;
+  }
+  swapPokemon(serverId, user, newPokemon, oldPokemon);
+  return `Swapped ${oldPokemon} for ${newPokemon}`;
+}
+
 module.exports = {
   init,
   teardown,
   draft,
   getUserPokemon,
+  swapPokemon,
 };
