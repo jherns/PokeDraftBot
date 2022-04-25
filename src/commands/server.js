@@ -6,7 +6,7 @@ module.exports = {
     .setDescription('Displays server name'),
   async execute(interaction) {
     await interaction.reply({
-      content: `This server's name is: ${message.guild.name}`,
+      content: `This server's name is: ${interaction.guild.name}`,
       ephemeral: true,
     });
   },

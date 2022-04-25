@@ -1,12 +1,12 @@
 const csvtojson = require('csvtojson');
 const fs = require('fs');
 
-const importPokemon = (databaseCredentials) => {
+const importPokemon = () => {
   // CSV file name
   const fileName = 'PokemonTiers.csv';
-  let writer = fs.createWriteStream('createPokemon.sql') ;
+  let writer = fs.createWriteStream('createPokemon.sql');
   writer.write('INSERT INTO pokemon (id, name, tier) VALUES ');
-  let id = 0;
+  let id = 1;
   csvtojson()
     .fromFile(fileName)
     .then((source) => {
@@ -20,22 +20,24 @@ const importPokemon = (databaseCredentials) => {
         const nuMon = source[i]['NU'];
         const puMon = source[i]['PU'];
         if (ou1Mon) {
-        writer.write(`(${id++},${ou1Mon},'OU1'),`);
+          writer.write(`(${id++},'${ou1Mon}','OU1'),`);
         }
         if (ou2Mon) {
-        writer.write(`(${id++},${ou2Mon},'OU2'),`);
+          writer.write(`(${id++},'${ou2Mon}','OU2'),`);
         }
         if (uuMon) {
-        writer.write(`(${id++},${uuMon},'UU'),`);
+          writer.write(`(${id++},'${uuMon}','UU'),`);
         }
         if (ruMon) {
-        writer.write(`(${id++},${ruMon},'RU'),`);
+          writer.write(`(${id++},'${ruMon}','RU'),`);
         }
         if (nuMon) {
-        writer.write(`(${id++},${nuMon},'NU'),`);
+          writer.write(`(${id++},'${nuMon}','NU'),`);
         }
         if (puMon) {
-        writer.write(`(${id++},${puMon},'PU')${i === (source.length - 1) ? ';' : ','}\n`);
+          writer.write(
+            `(${id++},'${puMon}','PU')${i === source.length - 1 ? ';' : ','}\n`
+          );
         }
       }
       console.log('All items stored into database successfully');
