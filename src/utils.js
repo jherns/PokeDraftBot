@@ -2,6 +2,9 @@ const fetchPokemonInfo = require('./pokeAPIWrapper/pokemonInfo.js');
 
 async function getPokemonInfo(pokemonName) {
   const pokemonInfo = await fetchPokemonInfo(pokemonName.toLowerCase());
+  if (!pokemonInfo) {
+    return `${pokemonName} is not a valid pokemon.`;
+  }
   const { abilities, stats, types } = pokemonInfo;
   const replies = [];
   replies.push(`Pokemon: ${pokemonName}`);
