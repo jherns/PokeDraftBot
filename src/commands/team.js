@@ -20,10 +20,13 @@ module.exports = {
     for (const pokemon of teamPokemon) {
       pokemonReplies.push(await getPokemonInfo(pokemon));
     }
-    await interaction.reply(
-      pokemonReplies.length
+    await interaction.reply({
+      content: pokemonReplies.length
         ? pokemonReplies.join('\n\n')
-        : `${interaction.options.getUser('owner').username} does not have a team.`
-    );
+        : `${
+            interaction.options.getUser('owner').username
+          } does not have a team.`,
+      ephemeral: true,
+    });
   },
 };
