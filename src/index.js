@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { Client, Intents, Collection } = require('discord.js');
-const { token } = require('../config.json');
+require('dotenv').config();
 const pokemonModel = require('./models/pokemonModel.js');
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
@@ -40,7 +40,7 @@ client.on('interactionCreate', async (interaction) => {
 pokemonModel
   .init()
   .then(() => {
-    client.login(token);
+    client.login(process.env.TOKEN);
   })
   .catch((err) => {
     console.error(err);
