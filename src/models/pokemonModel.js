@@ -1,24 +1,22 @@
 const mysql = require('mysql2/promise');
 const fs = require('fs');
 const path = require('path');
-const waitPort = require('wait-port');
+require('dotenv').config();
 
 let con;
 
 async function init() {
-  const host = process.env.MYSQL_HOST;
-  await waitPort({ host, port: 3306 });
   try {
     con = await mysql.createConnection({
-      host,
+      host: process.env.MYSQL_HOST,
       user: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DB,
       multipleStatements: true,
     });
     console.log('Connection established');
   } catch (error) {
     console.log('Error connecting to DB');
+    console.log(error);
   }
 
   try {
