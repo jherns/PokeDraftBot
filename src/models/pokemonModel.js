@@ -150,25 +150,18 @@ function calculatePokemonDraftTier(userTiers, tier) {
   switch (tier) {
     case 'OU1':
       return calcOU1Tier(userTiers);
-      break;
     case 'OU2':
       return calcOU2Tier(userTiers);
-      break;
     case 'UU':
       return calcUUTier(userTiers);
-      break;
     case 'RU':
       return calcRUTier(userTiers);
-      break;
     case 'NU':
       return calcNUTier(userTiers);
-      break;
     case 'PU':
       return calcPUTier(userTiers);
-      break;
     default:
       return null;
-      break;
   }
 }
 
