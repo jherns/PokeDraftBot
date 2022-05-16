@@ -28,7 +28,7 @@ async function init() {
     await con.query(sql);
     console.log('DB initialized.');
   } catch (error) {
-    throw error;
+    console.log(error.message);
   }
 }
 
@@ -37,7 +37,7 @@ async function teardown() {
     await con.end();
     console.log('Disconnected from DB');
   } catch (error) {
-    throw error;
+    console.log(error.message);
   }
 }
 
@@ -49,7 +49,7 @@ async function isDrafted(pokemonName) {
     );
     return rows[0].pokemonCount > 0;
   } catch (error) {
-    throw error;
+    console.log(error.message);
   }
 }
 
@@ -60,7 +60,7 @@ async function getTier(pokemonName) {
     ]);
     return rows[0]?.tier;
   } catch (error) {
-    throw error;
+    console.log(error.message);
   }
 }
 
@@ -72,7 +72,7 @@ async function soundsLike(pokemonName) {
     );
     return rows.map((row) => row.name);
   } catch (error) {
-    throw error;
+    console.log(error.message);
   }
 }
 
@@ -93,7 +93,7 @@ async function getUserTiers(serverId, userId) {
     );
     return rows.map((row) => row.tier);
   } catch (error) {
-    throw error;
+    console.log(error.message);
   }
 }
 async function getUserPokemon(serverId, userId) {
@@ -104,7 +104,7 @@ async function getUserPokemon(serverId, userId) {
     );
     return rows.map((row) => row.pokemon);
   } catch (error) {
-    throw error;
+    console.log(error.message);
   }
 }
 
@@ -116,7 +116,7 @@ async function getUserPokemonTiers(serverId, userId) {
     );
     return rows;
   } catch (error) {
-    throw error;
+    console.log(error.message);
   }
 }
 
@@ -180,7 +180,7 @@ async function insertPokemon(serverId, userId, pokemonName, tier) {
     );
     return `${pokemonName} drafted in the tier ${tier}`;
   } catch (error) {
-    throw error;
+    console.log(error.message);
   }
 }
 
@@ -191,7 +191,7 @@ async function swapPokemon(serverId, userId, newPokemon, oldPokemon) {
       [newPokemon, serverId, userId, oldPokemon]
     );
   } catch (error) {
-    throw error;
+    console.log(error.message);
   }
 }
 async function draft(serverId, userId, pokemonName) {
