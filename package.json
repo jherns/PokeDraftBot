@@ -1,6 +1,10 @@
 {
   "name": "poke-draft-discord-bot",
   "version": "1.0.0",
+  "engines": {
+    "node": "16.x",
+    "npm": "*"
+  },
   "description": "A discord bot to faciliate a Pokemon Draft League",
   "main": "index.js",
   "scripts": {
