@@ -12,6 +12,7 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
+    await interaction.deferReply({ ephemeral: true });
     const teamPokemon = await getUserPokemon(
       interaction.guildId,
       interaction.options.getUser('owner').id
@@ -20,13 +21,12 @@ module.exports = {
     for (const pokemon of teamPokemon) {
       pokemonReplies.push(await getPokemonInfo(pokemon));
     }
-    await interaction.reply({
+    await interaction.editReply({
       content: pokemonReplies.length
         ? pokemonReplies.join('\n\n')
         : `${
             interaction.options.getUser('owner').username
           } does not have a team.`,
-      ephemeral: true,
     });
   },
 };
