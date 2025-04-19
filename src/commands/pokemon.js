@@ -14,8 +14,9 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral})
     const pokemonName = interaction.options.getString('name');
     const pokemonInfo = await getPokemonInfo(pokemonName);
-    await interaction.reply({ content: pokemonInfo, ephemeral: true });
+    await interaction.editReply({ content: pokemonInfo, ephemeral: true });
   },
 };
